@@ -30,7 +30,7 @@ Le projet met l’accent sur :
 - Purge automatique des paramètres de tracking (`utm_*`, `fbclid`, `gclid`, `msclkid`, etc.)
 - Isolation WebRTC et configuration DNS-over-HTTPS
 - Purge de la mémoire, cookies et stockage de session
-- Mode panique pour effacer les traces et verrouiller le coffre-fort
+- Mode protection rapide pour effacer les traces et verrouiller le coffre-fort
 
 ### Expérience de navigation
 
@@ -124,7 +124,7 @@ npm run pack
 - `Ctrl + F` — recherche dans la page
 - `Ctrl + Shift + X` — mode panique
 - `F11` — plein écran
-
+- `*` — vos page favoris
 ## Notes de conception
 
 AetherFragm cible une navigation plus disciplinée et moins intrusive. La protection repose sur des mécanismes de blocage, d’isolation de session et de stockage sécurisé, mais le navigateur reste dépendant du moteur Chromium et des services externes auxquels il accède.
