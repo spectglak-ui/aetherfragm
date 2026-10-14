@@ -122,7 +122,7 @@ npm run pack
 - `Ctrl + L` — focus sur la barre d’adresse
 - `Ctrl + K` — ouvrir la palette de commandes
 - `Ctrl + F` — recherche dans la page
-- `Ctrl + Shift + X` — mode panique
+- `Ctrl + Shift + X` — mode protection rapide
 - `F11` — plein écran
 - `*` — vos page favoris
 ## Notes de conception
