@@ -1,0 +1,15 @@
+﻿node_modules/
+dist/
+out/
+assets/icon.ico
+build-ico.js
+*.json.bak
+aether-vault.json
+aether-settings.json
+aether-bookmarks.json
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+.DS_Store
+npm-debug.log*

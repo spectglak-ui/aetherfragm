@@ -1,0 +1,63 @@
+{
+  "name": "aetherfragm",
+  "version": "1.3.1",
+  "description": "Navigateur privé — Surfe sans laisser de trace",
+  "main": "main.js",
+  "author": "spectglak-ui",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64 --publish never",
+    "pack": "electron-builder --win --dir"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.0",
+    "pngjs": "^7.0.0"
+  },
+  "dependencies": {},
+  "build": {
+    "appId": "com.aetherfragm.app",
+    "productName": "AetherFragm",
+    "copyright": "Copyright © 2026 spectglak-ui",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "preload-search.js",
+      "vault.js",
+      "search.js",
+      "filters.js",
+      "index.html",
+      "search.html",
+      "diag.html",
+      "read.html",
+      "styles.css",
+      "assets/**/*",
+      "node_modules/**/*",
+      "!node_modules/electron/**",
+      "!node_modules/pngjs/**",
+      "!node_modules/electron-builder/**"
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] }
+      ],
+      "icon": "assets/icon.ico",
+      "artifactName": "${productName}-${version}-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AetherFragm",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico"
+    }
+  }
+}

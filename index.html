@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>AetherFragm</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Sprite d'icônes vectorielles -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></symbol>
+    <symbol id="i-reload" viewBox="0 0 24 24"><path d="M23 4v6h-6M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+    <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.25a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
+    <symbol id="i-dl" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></symbol>
+    <symbol id="i-ghost" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/><circle cx="9.5" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="10" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></symbol>
+    <symbol id="i-lang" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20"/></symbol>
+  </svg>
+
+  <div id="boot" class="boot-overlay">
+    <img src="assets/logo.png" class="boot-logo" alt="">
+    <p class="boot-text">initialisation du noyau aether</p>
+  </div>
+
+  <div class="crt scanlines"></div>
+  <div class="crt vignette"></div>
+  <div class="crt flicker"></div>
+
+  <div class="tabstrip" id="tabstrip">
+    <button class="tab-new" id="tab-new" title="nouveau canal"><svg class="ic"><use href="#i-plus"/></svg></button>
+    <button class="tab-new ghost-btn" id="tab-ghost" title="canal fantôme (éphémère)"><svg class="ic"><use href="#i-ghost"/></svg></button>
+  </div>
+
+  <header class="topbar">
+    <div class="winbtns">
+      <button class="wb min" id="wb-min"></button>
+      <button class="wb max" id="wb-max" title="ajuster à l'écran / restaurer"></button>
+      <button class="wb close" id="wb-close"></button>
+    </div>
+    <nav class="nav">
+      <button id="btn-back" title="retour"><svg class="ic"><use href="#i-back"/></svg></button>
+      <button id="btn-reload" title="recharger"><svg class="ic"><use href="#i-reload"/></svg></button>
+      <button id="btn-home" title="accueil"><svg class="ic"><use href="#i-home"/></svg></button>
+      <button id="btn-read" title="mode lecture"><svg class="ic"><use href="#i-book"/></svg></button>
+      <button id="btn-trad" title="traduire la page (fr)"><svg class="ic"><use href="#i-lang"/></svg></button>
+      <button id="btn-radar" title="radar à traqueurs"><svg class="ic"><use href="#i-radar"/></svg></button>
+      <button id="btn-shot" title="souvenir CRT (capture)"><svg class="ic"><use href="#i-cam"/></svg></button>
+      <button id="btn-settings" title="centre de commandement"><svg class="ic"><use href="#i-gear"/></svg></button>
+      <button id="btn-vault" title="coffre-fort (identifiants)"><svg class="ic"><use href="#i-lock"/></svg></button>
+    </nav>
+    <div class="urlwrap">
+      <span class="prompt">▸</span>
+      <input id="urlbar" spellcheck="false" placeholder="recherche ou url… (Ctrl+K : commandes)">
+      <button id="btn-dl" class="btn-icon" title="téléchargements"><svg class="ic"><use href="#i-dl"/></svg><span id="dl-badge">0</span></button>
+      <button id="btn-bookmark" class="btn-icon" title="ajouter aux favoris"><svg class="ic"><use href="#i-star"/></svg></button>
+      <span class="shield" id="shield">◈ <b id="blocked-count">0000</b></span>
+    </div>
+  </header>
+
+  <div id="findbar" class="findbar">
+    <input id="find-input" placeholder="trouver dans la page…" spellcheck="false">
+    <button id="find-next" title="suivant">⏎</button>
+    <button id="find-close" title="fermer"><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+
+  <main id="home" class="home">
+    <div class="hero">
+      <img src="assets/logo.png" class="applogo" alt="AetherFragm">
+      <p class="eyebrow">navigateur privé · moteur chromium</p>
+      <h1 class="logo">ΔETHER<span class="fat">FRAGM</span></h1>
+      <p class="tagline">Surfe sans laisser de trace</p>
+    </div>
+    <form id="searchform" class="searchbar">
+      <span class="search-prompt">⟩⟩</span>
+      <input id="searchinput" placeholder="interroge l'aether… (résultats dans ton interface)" autocomplete="off" spellcheck="false">
+      <button type="submit" class="search-go">⏎ syntoniser</button>
+    </form>
+    <section class="chips">
+      <div class="chip green">● https forcé</div>
+      <div class="chip violet" id="chip-filters">● traqueurs bloqués</div>
+      <div class="chip amber">● cookies éphémères</div>
+    </section>
+    <section class="term">
+      <p class="term-title">// journal de bord</p>
+      <div id="log"></div>
+      <p class="cursor">_</p>
+    </section>
+  </main>
+
+  <!-- Barre d'état permanente (jamais recouverte par la page) -->
+  <footer class="statusbar">
+    <span id="statusline" class="statusline">▲ prêt</span>
+    <div class="sb-right">
+      <label class="zoomwrap" title="zoom du canal">
+        <svg class="ic"><use href="#i-zoom"/></svg>
+        <input type="range" id="zoom-range" min="50" max="200" step="10" value="100">
+        <span id="zoom-val" class="zoom-val">100%</span>
+      </label>
+      <button id="dl-pill" class="dl-pill" title="téléchargements en cours">
+        <svg class="ic"><use href="#i-dl"/></svg>
+        <span id="dl-pill-name"></span>
+        <span class="bar mini"><i id="dl-pill-bar"></i></span>
+        <span id="dl-pill-pct"></span>
+      </button>
+    </div>
+  </footer>
+
+  <div id="palette" class="overlay pal-overlay">
+    <div class="palette">
+      <input id="palette-input" placeholder="commande… (images x, vidéos x, aller à url, purge, panique…)" spellcheck="false">
+      <div id="palette-list"></div>
+    </div>
+  </div>
+
+  <div id="radar" class="radar-panel">
+    <p class="radar-title">// radar à traqueurs</p>
+    <canvas id="radar-cv" width="260" height="260"></canvas>
+    <div id="radar-top" class="radar-top"></div>
+  </div>
+
+  <aside id="dl-panel" class="panel">
+    <h2 class="panel-title">// téléchargements (session)</h2>
+    <div id="dl-list" class="vault-list"></div>
+    <p class="overlay-hint">fichiers enregistrés dans Téléchargements · liste purgée avec la RAM</p>
+  </aside>
+
+  <div id="shot" class="overlay">
+    <div class="overlay-content shot-box">
+      <h2 class="overlay-title">// souvenir CRT</h2>
+      <canvas id="shot-cv"></canvas>
+      <div class="vault-actions">
+        <button class="btn-vault-ok" id="shot-save">enregistrer</button>
+        <button class="btn-vault-cancel" id="shot-close">fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bookmarks-overlay" class="overlay">
+    <div class="overlay-content">
+      <h2 class="overlay-title">// signets</h2>
+      <div id="bookmarks-grid" class="bookmarks-grid"></div>
+      <p class="overlay-hint">appuie sur * ou Échap pour fermer</p>
+    </div>
+  </div>
+
+  <aside id="panel" class="panel">
+    <h2 class="panel-title">// centre de commandement</h2>
+    <div class="panel-row"><div><div class="panel-label">Forçage HTTPS</div><div class="panel-desc">Upgrade les connexions non-sécurisées</div></div><label class="switch"><input type="checkbox" data-key="forceHttps" checked><span class="slider"></span></label></div>
+    <div class="panel-row"><div><div class="panel-label">Bouclier anti-pistage</div><div class="panel-desc">EasyPrivacy · ~25 000 domaines</div></div><label class="switch"><input type="checkbox" data-key="blockTrackers" checked><span class="slider"></span></label></div>
+    <div class="panel-row"><div><div class="panel-label">Isolation WebRTC</div><div class="panel-desc">Masque l'IP locale (redémarrage requis)</div></div><label class="switch"><input type="checkbox" data-key="webrtcIsolation" checked><span class="slider"></span></label></div>
+    <button id="btn-purge" class="btn-purge">⚡ purge mémoire (ram)</button>
+  </aside>
+
+  <!-- Coffre-fort -->
+  <div id="vault-unlock" class="overlay">
+    <div class="overlay-content" style="width:min(420px,90%)">
+      <h2 class="overlay-title">// coffre-fort</h2>
+      <p class="vault-msg" id="vault-msg">entre ta clé maîtresse</p>
+      <input type="password" id="vault-master" class="vault-input" placeholder="clé maîtresse" autocomplete="off">
+      <input type="password" id="vault-master2" class="vault-input" placeholder="confirme la clé (1re fois)" autocomplete="off" style="display:none">
+      <div class="vault-actions">
+        <button class="btn-vault-ok" id="vault-ok">⏎ ouvrir</button>
+        <button class="btn-vault-cancel" id="vault-cancel">annuler</button>
+      </div>
+    </div>
+  </div>
+  <div id="vault-manager" class="overlay">
+    <div class="overlay-content">
+      <h2 class="overlay-title">// coffre-fort · <span id="vault-count">0</span> identifiant(s)</h2>
+      <div id="vault-list" class="vault-list"></div>
+      <div id="vault-form" class="vault-form" style="display:none">
+        <input id="vf-origin" class="vault-input" placeholder="https://site.com" spellcheck="false">
+        <input id="vf-user" class="vault-input" placeholder="identifiant / e-mail" spellcheck="false">
+        <input id="vf-pass" class="vault-input" placeholder="mot de passe" type="text">
+        <div class="vault-actions">
+          <button class="btn-vault-ok" id="vf-save">enregistrer</button>
+          <button class="btn-vault-cancel" id="vf-cancel">annuler</button>
+        </div>
+      </div>
+      <div class="vault-actions">
+        <button class="btn-vault-ok" id="vault-add-btn">+ ajouter</button>
+        <button class="btn-vault-cancel" id="vault-lock"><svg class="ic"><use href="#i-lock"/></svg> verrouiller</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+<script>
+const home = document.getElementById('home'), bar = document.getElementById('urlbar'), count = document.getElementById('blocked-count');
+const log = document.getElementById('log'), shield = document.getElementById('shield'), status = document.getElementById('statusline');
+const strip = document.getElementById('tabstrip'), tabNew = document.getElementById('tab-new'), panel = document.getElementById('panel');
+const bookmarkBtn = document.getElementById('btn-bookmark'), bookmarksOverlay = document.getElementById('bookmarks-overlay'), bookmarksGrid = document.getElementById('bookmarks-grid');
+const searchForm = document.getElementById('searchform'), searchInput = document.getElementById('searchinput');
+const dlPanel = document.getElementById('dl-panel'), dlBadge = document.getElementById('dl-badge');
+const dlPill = document.getElementById('dl-pill'), dlPillName = document.getElementById('dl-pill-name'), dlPillBar = document.getElementById('dl-pill-bar'), dlPillPct = document.getElementById('dl-pill-pct');
+const radarOv = document.getElementById('radar'), radarCv = document.getElementById('radar-cv'), radarTop = document.getElementById('radar-top');
+const paletteOv = document.getElementById('palette'), palIn = document.getElementById('palette-input'), palList = document.getElementById('palette-list');
+const findBar = document.getElementById('findbar'), findIn = document.getElementById('find-input');
+const shotOv = document.getElementById('shot');
+let blocked = 0, currentUrl = '', bookmarks = [], currentTabId = null, dls = [];
+
+const SEARCH_ENGINE = 'aether://search?q=';
+const svg = id => '<svg class="ic"><use href="#' + id + '"/></svg>';
+
+function pushLog(txt, cls) { const p = document.createElement('p'); p.className = cls || ''; p.textContent = txt; log.prepend(p); while (log.children.length > 6) log.lastChild.remove(); }
+function setStatus(txt, cls) { status.textContent = txt; status.className = 'statusline ' + (cls || ''); }
+/* Détection d'URL SANS regex (insensible aux copier-coller qui mangent les backslashes) */
+function isUrl(s) {
+  if (s.includes('://')) return true;
+  if (s.includes(' ')) return false;
+  const i = s.indexOf('.');
+  return i > 0 && i < s.length - 1;
+}
+
+/* ---- Masque la vue web quand une surface de la coque est ouverte ---- */
+let overlayOn = false;
+const trackedSurfaces = () => [panel, dlPanel, paletteOv, radarOv, bookmarksOverlay, shotOv, findBar,
+  document.getElementById('toast'), document.getElementById('vault-unlock'), document.getElementById('vault-manager')];
+function refreshOverlay() {
+  const on = trackedSurfaces().some(el => el.classList.contains('open'));
+  if (on !== overlayOn) { overlayOn = on; window.aether.overlay(on); }
+}
+const mo = new MutationObserver(() => refreshOverlay());
+trackedSurfaces().forEach(el => mo.observe(el, { attributes: true, attributeFilter: ['class'] }));
+
+window.aether?.onStatus?.((txt, cls) => setStatus(txt, cls));
+window.aether?.onUrl?.(u => { bar.value = u; currentUrl = u; updateBookmarkButton(); });
+window.aether?.onHomeShow?.(() => { home.classList.remove('off'); setTimeout(() => searchInput.focus(), 60); });
+window.aether?.onHomeHide?.(() => home.classList.add('off'));
+window.aether?.onTabs?.(list => {
+  strip.querySelectorAll('.tab').forEach(el => el.remove());
+  list.forEach(t => {
+    if (t.active) currentTabId = t.id;
+    const b = document.createElement('button'); b.className = 'tab' + (t.active ? ' active' : '') + (t.ghost ? ' ghost' : '');
+    const title = document.createElement('span'); title.className = 'tab-title'; title.textContent = t.title || 'nouveau canal';
+    const x = document.createElement('span'); x.className = 'tab-x'; x.innerHTML = svg('i-x');
+    x.onclick = ev => { ev.stopPropagation(); window.aether.closeTab(t.id); };
+    b.append(title, x); b.onclick = () => window.aether.switchTab(t.id);
+    strip.insertBefore(b, tabNew);
+  });
+});
+window.aether?.onBlocked?.(url => {
+  blocked++;
+  count.textContent = String(blocked).padStart(4, '0');
+  shield.classList.remove('blip'); void shield.offsetWidth; shield.classList.add('blip');
+  let h = ''; try { h = new URL(url).hostname; } catch (e) {}
+  pushLog('▣ neutralisé → ' + h, 'hit');
+  addBlip(h);
+});
+window.aether?.onPurged?.(n => pushLog('↯ ' + n + ' paramètre(s) de pistage purgé(s)'));
+window.aether?.onStats?.(n => { document.getElementById('chip-filters').textContent = '● ' + n.toLocaleString('fr-FR') + ' filtres actifs'; pushLog('▲ bouclier chargé : ' + n.toLocaleString('fr-FR') + ' domaines sous surveillance'); });
+window.aether?.onSettings?.(s => { document.querySelectorAll('.switch input[data-key]').forEach(el => { el.checked = !!s[el.dataset.key]; }); });
+window.aether?.onBookmarks?.(list => { bookmarks = list; updateBookmarkButton(); renderBookmarks(); });
+window.aether?.onMaximize?.(v => document.getElementById('wb-max').classList.toggle('on', v));
+window.aether?.onFocusUrl?.(() => { bar.focus(); bar.select(); });
+window.aether?.onPalette?.(() => openPalette());
+window.aether?.onPanic?.(() => { closeAll(); pushLog('☠ mode panique exécuté : traces anéanties', 'hit'); });
+
+/* ---- Téléchargements : pastille permanente + panneau ---- */
+function fmtSize(n) { if (!n) return '0 o'; const u = ['o','Ko','Mo','Go']; let i = 0; while (n >= 1024 && i < 3) { n /= 1024; i++; } return n.toFixed(i ? 1 : 0) + ' ' + u[i]; }
+let pillTimer = null;
+window.aether?.onDl?.(d => {
+  let item = dls.find(x => x.name === d.name);
+  if (!item) { item = { name: d.name }; dls.unshift(item); }
+  item.received = d.received; item.total = d.total; item.state = d.state;
+  renderDls();
+  const active = dls.filter(x => x.state === 'progress');
+  if (d.state === 'progress') {
+    const pct = d.total ? Math.min(100, Math.round(d.received / d.total * 100)) : 0;
+    dlPill.classList.add('on'); dlPill.classList.remove('done');
+    dlPillName.textContent = d.name.length > 22 ? d.name.slice(0, 21) + '…' : d.name;
+    dlPillBar.style.width = pct + '%';
+    dlPillPct.textContent = pct + '%';
+  } else if (d.state === 'completed') {
+    pushLog('⬇ terminé : ' + d.name);
+    setStatus('⬇ téléchargement terminé : ' + d.name, 'ok');
+    if (!active.length) {
+      dlPill.classList.add('on', 'done');
+      dlPillName.textContent = d.name.length > 22 ? d.name.slice(0, 21) + '…' : d.name;
+      dlPillBar.style.width = '100%'; dlPillPct.textContent = '✓';
+      clearTimeout(pillTimer);
+      pillTimer = setTimeout(() => { if (!dls.some(x => x.state === 'progress')) dlPill.classList.remove('on', 'done'); }, 4000);
+    }
+  } else {
+    pushLog('✗ téléchargement interrompu : ' + d.name, 'hit');
+    if (!active.length) dlPill.classList.remove('on');
+  }
+});
+function renderDls() {
+  const wrap = document.getElementById('dl-list');
+  wrap.innerHTML = '';
+  if (!dls.length) { wrap.innerHTML = '<p class="bookmarks-empty">aucun téléchargement cette session</p>'; }
+  dls.forEach(d => {
+    const pct = d.total ? Math.min(100, Math.round(d.received / d.total * 100)) : 0;
+    const row = document.createElement('div'); row.className = 'dl-row';
+    row.innerHTML = '<div class="dl-name"></div><div class="bar"><i></i></div><div class="dl-meta"></div>';
+    row.querySelector('.dl-name').textContent = d.name;
+    row.querySelector('.bar i').style.width = (d.state === 'completed' ? 100 : pct) + '%';
+    row.querySelector('.dl-meta').textContent = d.state === 'completed' ? '✓ terminé · ' + fmtSize(d.total)
+      : d.state === 'progress' ? pct + '% · ' + fmtSize(d.received) + ' / ' + fmtSize(d.total) : '✗ ' + d.state;
+    wrap.appendChild(row);
+  });
+  const active = dls.filter(d => d.state === 'progress').length;
+  dlBadge.textContent = active; dlBadge.style.display = active ? 'grid' : 'none';
+}
+document.getElementById('btn-dl').onclick = e => { e.stopPropagation(); dlPanel.classList.toggle('open'); };
+dlPill.onclick = () => dlPanel.classList.add('open');
+
+/* ---- Navigation / recherche ---- */
+function navigateOrSearch(raw) {
+  const q = raw.trim(); if (!q) return;
+  let url;
+  if (isUrl(q)) { url = q.includes('://') ? q : 'https://' + q; pushLog('⇢ syntonisation → ' + url); }
+  else { url = SEARCH_ENGINE + encodeURIComponent(q); pushLog('⇢ recherche aether → ' + q); }
+  home.classList.add('off');
+  window.aether.navigate(url);
+}
+bar.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); navigateOrSearch(bar.value); } });
+searchForm.addEventListener('submit', e => { e.preventDefault(); navigateOrSearch(searchInput.value); searchInput.value = ''; });
+
+/* ---- Signets ---- */
+function updateBookmarkButton() { const isB = bookmarks.some(b => b.url === currentUrl); bookmarkBtn.classList.toggle('active', isB); }
+bookmarkBtn.onclick = () => {
+  if (!currentUrl) return;
+  const isB = bookmarks.some(b => b.url === currentUrl);
+  if (isB) { window.aether.removeBookmark(currentUrl); pushLog('☆ retiré des signets'); }
+  else {
+    let host = ''; try { host = new URL(currentUrl).hostname; } catch(e){}
+    const title = bar.value || host; const favicon = host ? 'https://www.google.com/s2/favicons?domain=' + host + '&sz=64' : '';
+    window.aether.addBookmark({ url: currentUrl, title, favicon }); pushLog('★ ajouté aux signets');
+  }
+};
+function renderBookmarks() {
+  bookmarksGrid.innerHTML = '';
+  if (!bookmarks.length) { bookmarksGrid.innerHTML = '<p class="bookmarks-empty">aucun signet pour le moment</p>'; return; }
+  bookmarks.forEach(bm => {
+    const item = document.createElement('div'); item.className = 'bookmark-item';
+    const img = document.createElement('img'); img.className = 'bookmark-favicon'; img.src = bm.favicon || '';
+    img.onerror = () => { img.style.display = 'none'; };
+    const span = document.createElement('span'); span.className = 'bookmark-title'; span.textContent = bm.title;
+    item.append(img, span);
+    item.onclick = () => { window.aether.navigate(bm.url); bookmarksOverlay.classList.remove('open'); pushLog('⇢ signet → ' + bm.url); };
+    bookmarksGrid.appendChild(item);
+  });
+}
+
+/* ---- Palette de commandes ---- */
+let palSel = 0;
+function baseCommands() { return [
+  { label: 'nouveau canal', run: () => window.aether.newTab() },
+  { label: 'canal fantôme (éphémère)', run: () => window.aether.ghostTab() },
+  { label: 'fermer ce canal', run: () => { if (currentTabId != null) window.aether.closeTab(currentTabId); } },
+  { label: 'purge mémoire (ram)', run: () => window.aether.purge() },
+  { label: 'mode panique (tout effacer + verrouiller)', run: () => window.aether.panic() },
+  { label: 'coffre-fort : ouvrir / déverrouiller', run: () => document.getElementById('btn-vault').click() },
+  { label: 'coffre-fort : verrouiller', run: () => window.aether.vaultLock() },
+  { label: 'signets', run: () => bookmarksOverlay.classList.add('open') },
+  { label: 'centre de commandement', run: () => panel.classList.add('open') },
+  { label: 'téléchargements', run: () => dlPanel.classList.add('open') },
+  { label: 'radar à traqueurs', run: () => radarOv.classList.toggle('open') },
+  { label: 'bulletin de santé (diag)', run: () => window.aether.navigate('aether://diag') },
+  { label: 'mode lecture', run: () => window.aether.read() },
+  { label: 'traduire la page', run: () => window.aether.trad() },
+  { label: 'souvenir CRT (capture)', run: () => takeShot() },
+  { label: 'console du canal (debug)', run: () => window.aether.guestDev() },
+  { label: 'ajuster / restaurer la fenêtre', run: () => window.aether.maximize() },
+  { label: 'trouver dans la page', run: () => openFind() }
+];}
+function palRender() {
+  const q = palIn.value.toLowerCase().trim();
+  let cmds = baseCommands().filter(c => c.label.toLowerCase().includes(q));
+  if (q) {
+    if (q.startsWith('images '))  cmds.unshift({ label: 'images : ' + q.slice(7), run: () => window.aether.navigate('aether://search?q=' + encodeURIComponent(q.slice(7)) + '&cat=images') });
+    if (q.startsWith('vidéos '))  cmds.unshift({ label: 'vidéos : ' + q.slice(7), run: () => window.aether.navigate('aether://search?q=' + encodeURIComponent(q.slice(7)) + '&cat=videos') });
+    if (q.startsWith('actus '))   cmds.unshift({ label: 'actus : ' + q.slice(6), run: () => window.aether.navigate('aether://search?q=' + encodeURIComponent(q.slice(6)) + '&cat=news') });
+    if (q.startsWith('chercher '))cmds.unshift({ label: 'chercher : ' + q.slice(9), run: () => window.aether.navigate('aether://search?q=' + encodeURIComponent(q.slice(9))) });
+    if (isUrl(q)) cmds.unshift({ label: 'aller à ' + q, run: () => window.aether.navigate(q) });
+  }
+  const shown = cmds.slice(0, 8);
+  palSel = Math.max(0, Math.min(palSel, shown.length - 1));
+  palList.innerHTML = '';
+  shown.forEach((c, i) => {
+    const d = document.createElement('div');
+    d.className = 'pal-item' + (i === palSel ? ' sel' : '');
+    d.textContent = '▸ ' + c.label;
+    d.onclick = () => { closePalette(); c.run(); };
+    palList.appendChild(d);
+  });
+  palList._cmds = shown;
+}
+function openPalette() { paletteOv.classList.add('open'); palIn.value = ''; palSel = 0; palRender(); setTimeout(() => palIn.focus(), 60); }
+function closePalette() { paletteOv.classList.remove('open'); }
+palIn.addEventListener('input', () => { palSel = 0; palRender(); });
+palIn.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { e.preventDefault(); palSel++; palRender(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); palSel--; palRender(); }
+  else if (e.key === 'Enter') { e.preventDefault(); const c = (palList._cmds || [])[palSel]; if (c) { closePalette(); c.run(); } }
+  else if (e.key === 'Escape') closePalette();
+});
+
+/* ---- Trouver dans la page ---- */
+function openFind() { findBar.classList.add('open'); findIn.focus(); findIn.select(); }
+function closeFind() { findBar.classList.remove('open'); window.aether.findStop(); }
+window.aether?.onFind?.(() => openFind());
+findIn.addEventListener('input', () => window.aether.findStart(findIn.value));
+findIn.addEventListener('keydown', e => { if (e.key === 'Enter') window.aether.findNext(); if (e.key === 'Escape') closeFind(); });
+document.getElementById('find-next').onclick = () => window.aether.findNext();
+document.getElementById('find-close').onclick = closeFind;
+
+/* ---- Radar ---- */
+let blips = []; const hostCount = {};
+function hash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+function addBlip(host) {
+  if (!host) return;
+  const h = hash(host);
+  blips.push({ angle: (h % 360) * Math.PI / 180, radius: 20 + (h >> 4) % 100, t: Date.now() });
+  hostCount[host] = (hostCount[host] || 0) + 1;
+  radarTop.innerHTML = Object.entries(hostCount).sort((a, b) => b[1] - a[1]).slice(0, 5)
+    .map(([hst, n]) => '<div>▣ ' + hst + ' <span>×' + n + '</span></div>').join('');
+}
+let sweep = 0;
+(function radarLoop() {
+  requestAnimationFrame(radarLoop);
+  if (!radarOv.classList.contains('open')) return;
+  const W = radarCv.width, H = radarCv.height, cx = W / 2, cy = H / 2, R = W / 2 - 8;
+  const ctx = radarCv.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(46,230,169,.22)'; ctx.lineWidth = 1;
+  for (let r = R; r > 0; r -= R / 4) { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy); ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R); ctx.stroke();
+  sweep = (sweep + 0.025) % (Math.PI * 2);
+  ctx.strokeStyle = 'rgba(46,230,169,.9)';
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(sweep) * R, cy + Math.sin(sweep) * R); ctx.stroke();
+  const now = Date.now();
+  blips = blips.filter(b => now - b.t < 5000);
+  for (const b of blips) {
+    const age = (now - b.t) / 5000;
+    const d = Math.abs(((sweep - b.angle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2));
+    const glow = d < 0.6 ? 1 : 0.35;
+    ctx.fillStyle = 'rgba(224,68,124,' + ((1 - age) * glow).toFixed(2) + ')';
+    ctx.beginPath(); ctx.arc(cx + Math.cos(b.angle) * b.radius, cy + Math.sin(b.angle) * b.radius, 3, 0, Math.PI * 2); ctx.fill();
+  }
+})();
+document.getElementById('btn-radar').onclick = () => radarOv.classList.toggle('open');
+
+/* ---- Souvenir CRT ---- */
+async function takeShot() {
+  const data = await window.aether.shotTake();
+  if (!data) { pushLog('✗ capture impossible', 'hit'); return; }
+  const img = new Image();
+  img.onload = () => {
+    const cv = document.getElementById('shot-cv');
+    cv.width = img.width; cv.height = img.height;
+    const ctx = cv.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    ctx.fillStyle = 'rgba(0,0,0,.22)';
+    for (let y = 0; y < cv.height; y += 3) ctx.fillRect(0, y, cv.width, 1);
+    const g = ctx.createRadialGradient(cv.width / 2, cv.height / 2, Math.min(cv.width, cv.height) / 3, cv.width / 2, cv.height / 2, Math.max(cv.width, cv.height) / 1.1);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.5)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.font = '16px monospace'; ctx.fillStyle = 'rgba(185,168,255,.85)';
+    ctx.fillText('ΔETHERFRAGM · ' + new Date().toLocaleString('fr-FR'), 14, cv.height - 14);
+    shotOv.classList.add('open');
+  };
+  img.src = data;
+}
+document.getElementById('btn-shot').onclick = () => takeShot();
+document.getElementById('shot-save').onclick = () => { window.aether.shotSave(document.getElementById('shot-cv').toDataURL('image/png')); shotOv.classList.remove('open'); };
+document.getElementById('shot-close').onclick = () => shotOv.classList.remove('open');
+
+/* ---- Zoom + traduction ---- */
+const zoomRange = document.getElementById('zoom-range'), zoomVal = document.getElementById('zoom-val');
+zoomRange.addEventListener('input', () => window.aether.zoomSet(+zoomRange.value));
+window.aether?.onZoom?.(p => { zoomRange.value = p; zoomVal.textContent = p + '%'; });
+document.getElementById('btn-trad').onclick = () => window.aether.trad();
+
+/* ---- Divers ---- */
+document.querySelectorAll('.switch input[data-key]').forEach(el => { el.addEventListener('change', () => { window.aether.setSetting(el.dataset.key, el.checked); pushLog((el.checked ? '▲ protocole activé : ' : '▼ protocole coupé : ') + el.dataset.key, el.checked ? '' : 'hit'); }); });
+tabNew.onclick = () => window.aether.newTab();
+document.getElementById('tab-ghost').onclick = () => { window.aether.ghostTab(); pushLog('canal fantôme ouvert (éphémère)'); };
+document.getElementById('btn-read').onclick = () => window.aether.read();
+document.getElementById('btn-home').onclick = () => { home.classList.remove('off'); window.aether.home(); };
+document.getElementById('btn-reload').onclick = () => window.aether.reload();
+document.getElementById('btn-back').onclick = () => window.aether.back();
+document.getElementById('wb-min').onclick = () => window.aether.minimize();
+document.getElementById('wb-max').onclick = () => window.aether.maximize();
+document.getElementById('wb-close').onclick = () => window.aether.close();
+document.getElementById('btn-settings').onclick = e => { e.stopPropagation(); panel.classList.toggle('open'); };
+document.getElementById('btn-purge').onclick = () => { window.aether.purge?.(); pushLog('PURGE : cookies, cache et sessions anéantis.', 'hit'); setStatus('⚡ mémoire purgée', 'err'); const btn = document.getElementById('btn-purge'); btn.style.background = 'rgba(224,68,124,.3)'; setTimeout(() => { btn.style.background = 'transparent'; }, 300); };
+document.addEventListener('click', e => {
+  if (panel.classList.contains('open') && !panel.contains(e.target) && !e.target.closest('#btn-settings')) panel.classList.remove('open');
+  if (dlPanel.classList.contains('open') && !dlPanel.contains(e.target) && !e.target.closest('#btn-dl') && !e.target.closest('#dl-pill')) dlPanel.classList.remove('open');
+});
+
+/* ---- Coffre-fort ---- */
+const vaultBtn = document.getElementById('btn-vault');
+const unlockOv = document.getElementById('vault-unlock');
+const managerOv = document.getElementById('vault-manager');
+const masterIn = document.getElementById('vault-master');
+const master2In = document.getElementById('vault-master2');
+const vaultMsg = document.getElementById('vault-msg');
+const toastEl = document.getElementById('toast');
+const vform = document.getElementById('vault-form');
+let vaultUnlocked = false, hasVault = false, editing = -1;
+
+window.aether?.onVaultState?.(s => {
+  vaultUnlocked = s.unlocked; hasVault = s.hasVault;
+  vaultBtn.querySelector('use').setAttribute('href', vaultUnlocked ? '#i-unlock' : '#i-lock');
+  if (!vaultUnlocked) managerOv.classList.remove('open');
+});
+vaultBtn.onclick = () => { vaultUnlocked ? openManager() : openUnlock(); };
+function openUnlock() {
+  masterIn.value = ''; master2In.value = '';
+  master2In.style.display = hasVault ? 'none' : 'block';
+  vaultMsg.textContent = hasVault ? 'entre ta clé maîtresse pour ouvrir le coffre' : 'première fois : crée ta clé maîtresse (jamais stockée en clair)';
+  unlockOv.classList.add('open');
+  setTimeout(() => masterIn.focus(), 80);
+}
+document.getElementById('vault-cancel').onclick = () => unlockOv.classList.remove('open');
+document.getElementById('vault-ok').onclick = doUnlock;
+masterIn.addEventListener('keydown', e => { if (e.key === 'Enter') doUnlock(); });
+async function doUnlock() {
+  const m = masterIn.value;
+  if (!hasVault && m !== master2In.value) { vaultMsg.textContent = '⚠ les deux clés ne correspondent pas'; return; }
+  const r = await window.aether.vaultUnlock(m);
+  if (r.ok) { unlockOv.classList.remove('open'); openManager(); }
+  else vaultMsg.textContent = '✗ ' + r.error;
+}
+async function openManager() { renderVault(await window.aether.vaultList()); managerOv.classList.add('open'); }
+function renderVault(list) {
+  document.getElementById('vault-count').textContent = list.length;
+  const wrap = document.getElementById('vault-list');
+  wrap.innerHTML = '';
+  if (!list.length) wrap.innerHTML = '<p class="bookmarks-empty">coffre vide — le navigateur te proposera de garder tes identifiants à la prochaine connexion</p>';
+  list.forEach(e => {
+    const row = document.createElement('div'); row.className = 'vault-row';
+    row.innerHTML = '<span class="v-origin"></span><span class="v-user"></span><code class="v-pass">••••••••</code>'
+      + '<button class="v-btn" data-a="eye">' + svg('i-eye') + '</button>'
+      + '<button class="v-btn" data-a="copy">' + svg('i-copy') + '</button>'
+      + '<button class="v-btn" data-a="edit">' + svg('i-edit') + '</button>'
+      + '<button class="v-btn" data-a="del">' + svg('i-x') + '</button>';
+    row.querySelector('.v-origin').textContent = e.origin;
+    row.querySelector('.v-user').textContent = e.user;
+    row.querySelector('[data-a=eye]').onclick = ev => {
+      const c = ev.currentTarget.parentElement.querySelector('.v-pass');
+      const shown = c.dataset.shown; c.textContent = shown ? '••••••••' : e.pass; c.dataset.shown = shown ? '' : '1';
+    };
+    row.querySelector('[data-a=copy]').onclick = () => { navigator.clipboard?.writeText(e.pass); pushLog('mot de passe copié'); };
+    row.querySelector('[data-a=edit]').onclick = () => openVaultForm(e);
+    row.querySelector('[data-a=del]').onclick = async () => { await window.aether.vaultRemove(e.i); openManager(); };
+    wrap.appendChild(row);
+  });
+}
+document.getElementById('vault-lock').onclick = () => { window.aether.vaultLock(); managerOv.classList.remove('open'); pushLog('coffre verrouillé'); };
+document.getElementById('vault-add-btn').onclick = () => openVaultForm(null);
+function openVaultForm(e) {
+  editing = e ? e.i : -1;
+  vform.style.display = 'flex';
+  document.getElementById('vf-origin').value = e ? e.origin : (currentUrl || '');
+  document.getElementById('vf-user').value = e ? e.user : '';
+  document.getElementById('vf-pass').value = e ? e.pass : '';
+}
+document.getElementById('vf-cancel').onclick = () => { vform.style.display = 'none'; };
+document.getElementById('vf-save').onclick = async () => {
+  const entry = {
+    origin: document.getElementById('vf-origin').value.trim(),
+    user: document.getElementById('vf-user').value.trim(),
+    pass: document.getElementById('vf-pass').value
+  };
+  if (!entry.origin) return;
+  if (editing >= 0) await window.aether.vaultUpdate(editing, entry); else await window.aether.vaultAdd(entry);
+  vform.style.display = 'none';
+  openManager();
+}
+function showToast(msg, actions) {
+  toastEl.innerHTML = '';
+  const p = document.createElement('p'); p.textContent = msg; toastEl.appendChild(p);
+  actions.forEach(a => {
+    const b = document.createElement('button');
+    b.textContent = a.label; b.className = 't-btn' + (a.primary ? ' primary' : '');
+    b.onclick = () => { a.fn(); toastEl.classList.remove('open'); };
+    toastEl.appendChild(b);
+  });
+  toastEl.classList.add('open');
+  setTimeout(() => toastEl.classList.remove('open'), 12000);
+}
+window.aether?.onVaultSavePrompt?.(d => showToast('▸ enregistrer les identifiants de ' + d.origin + ' dans le coffre ?', [
+  { label: 'enregistrer', primary: true, fn: () => window.aether.vaultSaveAccept() },
+  { label: 'ignorer', fn: () => window.aether.vaultSaveDecline() }
+]));
+window.aether?.onVaultFillPrompt?.(d => showToast('▸ aide à la connexion disponible pour ' + d.origin, [
+  { label: 'remplir', primary: true, fn: () => window.aether.vaultFill() },
+  { label: 'plus tard', fn: () => {} }
+]));
+
+/* ---- Échap maître ---- */
+function closeAll() {
+  [bookmarksOverlay, managerOv, unlockOv, paletteOv, shotOv].forEach(o => o.classList.remove('open'));
+  panel.classList.remove('open'); dlPanel.classList.remove('open'); radarOv.classList.remove('open');
+  closeFind();
+}
+document.addEventListener('keydown', e => {
+  if (e.key === '*' || (e.key === 'b' && e.ctrlKey)) { e.preventDefault(); bookmarksOverlay.classList.toggle('open'); }
+  if (e.key === 'Escape') closeAll();
+});
+
+const boot = document.getElementById('boot');
+boot.addEventListener('animationend', e => { if (e.animationName === 'boot-fadeout') boot.remove(); });
+window.aether?.ready?.();
+pushLog('▲ bouclier actif : aucune trace conservée');
+pushLog('▲ AetherFragm v1.3.1 — noyau et coque reconstruits sains');
+</script>
+</body>
+</html>

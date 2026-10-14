@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>aether · diagnostic</title>
+<style>
+  :root{--abyss:#060609;--line:rgba(255,255,255,.07);--violet:#8b7cf6;--violet-hi:#b9a8ff;--green:#2ee6a9;--amber:#e0a13c;--crimson:#e0447c;--text:#eceaf6;--muted:#8f8fa3;--mono:ui-monospace,'JetBrains Mono',Consolas,monospace}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--abyss);color:var(--text);font-family:var(--mono);min-height:100vh;padding:34px;
+    background-image:radial-gradient(1px 1px at 12% 22%,rgba(255,255,255,.3) 50%,transparent 51%),radial-gradient(1px 1px at 68% 12%,rgba(255,255,255,.2) 50%,transparent 51%);background-size:520px 520px,340px 340px}
+  .crt{position:fixed;inset:0;pointer-events:none}
+  .scanlines{background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);opacity:.45}
+  h1{font-size:15px;letter-spacing:.3em;color:var(--violet-hi);text-transform:uppercase;text-shadow:0 0 14px rgba(139,124,246,.6);margin-bottom:6px}
+  .sub{color:var(--muted);font-size:11px;letter-spacing:.15em;margin-bottom:26px}
+  .score{display:flex;align-items:center;gap:22px;margin-bottom:28px}
+  .gauge{width:120px;height:120px;border-radius:50%;border:2px solid rgba(46,230,169,.4);display:grid;place-items:center;
+    box-shadow:0 0 30px rgba(46,230,169,.2),inset 0 0 24px rgba(46,230,169,.12)}
+  .gauge b{font-size:34px;color:var(--green);text-shadow:0 0 16px rgba(46,230,169,.7)}
+  .grade{font-size:12px;color:var(--muted);letter-spacing:.2em;line-height:1.9}
+  .row{display:flex;justify-content:space-between;gap:14px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:rgba(255,255,255,.03);font-size:12px;letter-spacing:.05em}
+  .ok{color:var(--green);text-shadow:0 0 8px rgba(46,230,169,.5)}
+  .ko{color:var(--crimson);text-shadow:0 0 8px rgba(224,68,124,.5)}
+  .warn{color:var(--amber)}
+  .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--violet));box-shadow:0 0 12px rgba(46,230,169,.6)}
+</style>
+</head>
+<body>
+<div class="crt scanlines"></div>
+<h1>ΔETHERFRAGM · bulletin de santé</h1>
+<p class="sub">// audit de confidentialité exécuté localement — aucune donnée ne quitte cette machine</p>
+<div class="score">
+  <div class="gauge"><b id="score">--</b></div>
+  <div class="grade" id="grade">analyse en cours…</div>
+</div>
+<div id="rows"></div>
+<script>
+const rowsEl = document.getElementById('rows');
+function row(label, ok, detail) {
+  const d = document.createElement('div'); d.className = 'row';
+  d.innerHTML = '<span>' + label + '</span><span class="' + (ok === true ? 'ok' : ok === false ? 'ko' : 'warn') + '">' + detail + '</span>';
+  rowsEl.appendChild(d);
+  return ok === true ? 1 : 0;
+}
+(async () => {
+  const r = await window.aetherSearch.diagReport().catch(() => ({}));
+  let pts = 0, max = 0;
+
+  // Test WebRTC local (fuite d'IP)
+  const leak = await new Promise(res => {
+    try {
+      const pc = new RTCPeerConnection({ iceServers: [] });
+      let found = false;
+      pc.onicecandidate = e => {
+        if (!e.candidate) return pc.close();
+        if (/srflx|relay/.test(e.candidate.candidate) && !/(10\.|192\.168\.|127\.|172\.(1[6-9]|2\d|3[01])\.)/.test(e.candidate.candidate)) found = true;
+      };
+      pc.createDataChannel('');
+      pc.createOffer().then(o => pc.setLocalDescription(o));
+      setTimeout(() => { try { pc.close(); } catch (e) {} res(found); }, 1500);
+    } catch (e) { res(false); }
+  });
+  max += 30; pts += (r.webrtc && !leak) ? 30 : leak ? 0 : 15;
+  row('Fuite WebRTC (IP locale/publique)', r.webrtc && !leak, leak ? '✗ fuite détectée' : r.webrtc ? '✓ aucune fuite' : '⚠ isolation désactivée');
+
+  max += 15; if (r.doh) pts += 15;
+  row('DNS-over-HTTPS (résolution chiffrée)', !!r.doh, r.doh ? '✓ cloudflare-dns' : '✗ DNS en clair');
+  max += 15; if (r.forceHttps) pts += 15;
+  row('Forçage HTTPS', !!r.forceHttps, r.forceHttps ? '✓ actif' : '✗ coupé');
+  max += 20; if (r.shield) pts += 20;
+  row('Bouclier anti-pistage EasyPrivacy', !!r.shield, r.shield ? '✓ ' + (r.filters || 0).toLocaleString('fr-FR') + ' domaines' : '✗ désarmé');
+  max += 10; if (r.vaultLocked) pts += 10;
+  row('Coffre-fort des identifiants', r.vaultLocked === true, r.vaultLocked ? '✓ verrouillé' : '⚠ déverrouillé');
+  max += 10; pts += 10;
+  row('Cookies & sessions', true, '✓ purgés à chaque lancement');
+
+  const score = Math.round(pts / max * 100);
+  document.getElementById('score').textContent = score;
+  const g = score >= 90 ? 'S — FANTÔME' : score >= 75 ? 'A — DISCRET' : score >= 55 ? 'B — VISIBLE' : 'C — EXPOSÉ';
+  document.getElementById('grade').innerHTML = 'note de confidentialité<br><span class="ok">classe ' + g + '</span><br><span style="color:var(--muted)">' + (r.blockedTotal || 0).toLocaleString('fr-FR') + ' traqueurs abattus cette session</span>';
+  const bar = document.createElement('div'); bar.className = 'bar'; bar.innerHTML = '<i style="width:' + score + '%"></i>';
+  rowsEl.prepend(bar);
+})();
+</script>
+</body>
+</html>

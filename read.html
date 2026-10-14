@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>aether · lecture</title>
+<style>
+  :root{--ph:#2ee6a9;--bg:#04080a}
+  *{box-sizing:border-box;margin:0}
+  body.amber{--ph:#e0a13c;--bg:#0a0704}
+  body{background:var(--bg);color:var(--ph);font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.75;padding:60px 20px 120px}
+  .crt{position:fixed;inset:0;pointer-events:none}
+  .scanlines{background:repeating-linear-gradient(0deg,rgba(0,0,0,.3) 0 1px,transparent 1px 3px);opacity:.4}
+  article{max-width:680px;margin:0 auto;text-shadow:0 0 6px rgba(46,230,169,.35)}
+  body.amber article{text-shadow:0 0 6px rgba(224,161,60,.35)}
+  h1{font-family:ui-monospace,Consolas,monospace;font-size:26px;letter-spacing:.04em;line-height:1.35;margin-bottom:34px;border-bottom:1px solid rgba(46,230,169,.3);padding-bottom:16px}
+  p{margin-bottom:1.3em;text-align:justify}
+  .tools{position:fixed;top:14px;right:16px;display:flex;gap:8px;z-index:5}
+  .tools button{font-family:ui-monospace,Consolas,monospace;font-size:12px;letter-spacing:.1em;color:var(--ph);
+    background:transparent;border:1px solid rgba(46,230,169,.4);border-radius:8px;padding:6px 10px;cursor:pointer}
+  .tools button:hover{background:rgba(46,230,169,.12);box-shadow:0 0 12px rgba(46,230,169,.3)}
+  .empty{font-family:ui-monospace,Consolas,monospace;color:var(--ph);opacity:.7;letter-spacing:.1em}
+</style>
+</head>
+<body>
+<div class="crt scanlines"></div>
+<div class="tools">
+  <button id="plus">A+</button><button id="minus">A−</button><button id="theme">◐ teinte</button>
+</div>
+<article id="art"><p class="empty">⇢ extraction du texte…</p></article>
+<script>
+let size = 19;
+document.getElementById('plus').onclick = () => { size = Math.min(30, size + 2); document.body.style.fontSize = size + 'px'; };
+document.getElementById('minus').onclick = () => { size = Math.max(14, size - 2); document.body.style.fontSize = size + 'px'; };
+document.getElementById('theme').onclick = () => document.body.classList.toggle('amber');
+window.aetherSearch.readGet().then(a => {
+  const art = document.getElementById('art');
+  if (!a || !a.text) { art.innerHTML = '<p class="empty">✗ aucun texte extrait — retourne sur une page d\'article</p>'; return; }
+  document.title = a.title + ' · lecture';
+  art.innerHTML = '<h1></h1>' + a.text.split(/\n\n+/).map(p => '<p></p>').join('');
+  art.querySelector('h1').textContent = a.title;
+  const ps = art.querySelectorAll('p');
+  a.text.split(/\n\n+/).forEach((t, i) => { if (ps[i]) ps[i].textContent = t; });
+});
+</script>
+</body>
+</html>

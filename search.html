@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>aether · recherche</title>
+<style>
+  :root{--abyss:#060609;--line:rgba(255,255,255,.07);--violet:#8b7cf6;--violet-hi:#b9a8ff;--green:#2ee6a9;--crimson:#e0447c;--text:#eceaf6;--muted:#8f8fa3;--mono:ui-monospace,'JetBrains Mono','Fira Code',Consolas,monospace;--sans:'Segoe UI',system-ui,Arial,sans-serif}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--abyss);color:var(--text);font-family:var(--sans);min-height:100vh;
+    background-image:radial-gradient(1px 1px at 12% 22%,rgba(255,255,255,.35) 50%,transparent 51%),radial-gradient(1px 1px at 68% 12%,rgba(255,255,255,.25) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 42% 68%,rgba(185,168,255,.3) 50%,transparent 51%);
+    background-size:520px 520px,340px 340px,640px 640px}
+  .crt{position:fixed;inset:0;pointer-events:none;z-index:60}
+  .scanlines{background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);opacity:.45}
+  .vignette{background:radial-gradient(120% 90% at 50% 45%,transparent 55%,rgba(0,0,0,.5) 100%)}
+  header{display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(6,6,9,.92);backdrop-filter:blur(10px);z-index:10}
+  header img{width:34px;height:auto;filter:drop-shadow(0 0 10px rgba(139,124,246,.8))}
+  .brand{font-family:var(--mono);color:var(--violet-hi);letter-spacing:.3em;font-size:13px;text-shadow:0 0 12px rgba(139,124,246,.6)}
+  form{flex:1;display:flex;align-items:center;gap:10px;height:40px;padding:0 16px;border-radius:999px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(139,124,246,.35);box-shadow:inset 0 0 18px rgba(139,124,246,.1)}
+  form:focus-within{border-color:var(--violet-hi);box-shadow:inset 0 0 22px rgba(139,124,246,.18),0 0 22px rgba(139,124,246,.25)}
+  .p{color:var(--green);font-family:var(--mono)}
+  input{flex:1;background:transparent;border:0;outline:0;color:var(--text);font-family:var(--mono);font-size:13px;letter-spacing:.05em}
+  .engine{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--green);white-space:nowrap;text-transform:uppercase}
+  .tabs{display:flex;gap:18px;padding:10px 26px 0;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .tabs span{cursor:pointer;transition:.2s}
+  .tabs span.on{color:var(--violet-hi);border-bottom:1px solid var(--violet);padding-bottom:6px;text-shadow:0 0 10px rgba(139,124,246,.5)}
+  .tabs span.off{opacity:.55}
+  .tabs span.off:hover{opacity:1;color:var(--violet-hi);text-shadow:0 0 10px rgba(139,124,246,.5)}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;padding:22px 26px 60px;max-width:1200px}
+  main.wide{grid-template-columns:minmax(0,1fr)}
+  @media(max-width:900px){main{grid-template-columns:1fr}}
+  .res{margin-bottom:26px}
+  .res .url{font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:.06em;margin-bottom:4px;word-break:break-all}
+  .res a{color:var(--violet-hi);font-size:19px;text-decoration:none;letter-spacing:.02em}
+  .res a:hover{text-shadow:0 0 14px rgba(139,124,246,.7);text-decoration:underline}
+  .res p{margin-top:6px;color:var(--muted);font-size:13.5px;line-height:1.55}
+  .card{border:1px solid var(--line);border-radius:14px;padding:18px;height:max-content;position:sticky;top:86px;
+    background:linear-gradient(180deg,rgba(13,13,21,.9),rgba(8,8,12,.9));box-shadow:inset 0 0 26px rgba(139,124,246,.06)}
+  .card h3{font-size:17px;margin-bottom:6px}
+  .card img{width:100%;border-radius:10px;margin:10px 0}
+  .card p{color:var(--muted);font-size:12.5px;line-height:1.6}
+  .card .src{margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--green);text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+  .gitem{display:block;border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;
+    background:rgba(255,255,255,.03);transition:.2s}
+  .gitem:hover{border-color:var(--violet);box-shadow:0 0 16px rgba(139,124,246,.25);transform:translateY(-2px)}
+  .gitem .thumb{position:relative;width:100%;height:140px;object-fit:cover;display:block;background:#0b0b12}
+  .gitem .dur{position:absolute;right:6px;bottom:6px;font-family:var(--mono);font-size:10px;color:#fff;
+    background:rgba(6,6,9,.85);padding:2px 6px;border-radius:5px;letter-spacing:.08em}
+  .gitem .cap{padding:9px 10px;font-family:var(--mono);font-size:10.5px;color:var(--text);letter-spacing:.03em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gitem .sub{padding:0 10px 9px;font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.05em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pager{display:flex;justify-content:center;padding:30px 0 10px}
+  .more{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--violet-hi);
+    background:rgba(139,124,246,.10);border:1px solid rgba(139,124,246,.45);border-radius:999px;padding:11px 26px;
+    cursor:pointer;transition:.2s}
+  .more:hover{background:rgba(139,124,246,.25);box-shadow:0 0 18px rgba(139,124,246,.4);text-shadow:0 0 8px rgba(185,168,255,.8)}
+  .more:disabled{opacity:.5;cursor:wait}
+  .fin{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted)}
+  .state{font-family:var(--mono);color:var(--muted);letter-spacing:.12em;padding:40px 0;font-size:13px}
+  .state.err{color:var(--crimson);text-shadow:0 0 10px rgba(224,68,124,.4)}
+  .cursor{animation:blink 1s steps(1) infinite;color:var(--green)}
+  @keyframes blink{50%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="crt scanlines"></div><div class="crt vignette"></div>
+<header>
+  <img src="assets/logo.png" alt="">
+  <span class="brand">ΔETHERFRAGM</span>
+  <form id="f"><span class="p">⟩⟩</span><input id="q" spellcheck="false" autocomplete="off"></form>
+  <span class="engine" id="engine"></span>
+</header>
+<div class="tabs" id="tabs">
+  <span data-cat="web">Tout</span>
+  <span data-cat="images">Images</span>
+  <span data-cat="videos">Vidéos</span>
+  <span data-cat="news">Actualités</span>
+</div>
+<main id="main">
+  <section id="results"><p class="state">⇢ interrogation de l'aether… <span class="cursor">_</span></p></section>
+  <aside id="card"></aside>
+</main>
+<script>
+const params = new URLSearchParams(location.search);
+const q = params.get('q') || '';
+const cat = params.get('cat') || 'web';
+let page = 1;
+document.getElementById('q').value = q;
+document.title = q + ' · aether recherche';
+
+document.getElementById('f').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = document.getElementById('q').value.trim();
+  if (v) window.aetherSearch.go('aether://search?q=' + encodeURIComponent(v) + '&cat=' + cat);
+});
+document.querySelectorAll('#tabs span').forEach(s => {
+  s.className = s.dataset.cat === cat ? 'on' : 'off';
+  s.onclick = () => window.aetherSearch.go('aether://search?q=' + encodeURIComponent(q) + '&cat=' + s.dataset.cat);
+});
+
+const resultsEl = document.getElementById('results');
+const cardEl = document.getElementById('card');
+const engineEl = document.getElementById('engine');
+const mainEl = document.getElementById('main');
+function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fail(msg){ resultsEl.innerHTML = '<p class="state err">✗ ' + esc(msg) + '</p>'; }
+
+function itemsHtml(d) {
+  if (cat === 'images') return d.images.map(i => `
+    <a class="gitem" href="${esc(i.url)}">
+      <img class="thumb" src="${esc(i.thumb)}" loading="lazy" referrerpolicy="no-referrer"
+        onerror="this.onerror=null;this.src='assets/logo.png';this.style.objectFit='contain';this.style.padding='34px';this.style.opacity=.5">
+      <div class="cap">${esc(i.title)}</div>
+    </a>`).join('');
+  if (cat === 'videos') return d.videos.map(v => `
+    <a class="gitem" href="${esc(v.url)}">
+      <span style="position:relative;display:block">
+        <img class="thumb" src="${esc(v.thumb)}" loading="lazy" referrerpolicy="no-referrer"
+          onerror="this.onerror=null;this.src='assets/logo.png';this.style.objectFit='contain';this.style.padding='34px';this.style.opacity=.5">
+        ${v.duration ? '<span class="dur">' + esc(v.duration) + '</span>' : ''}
+      </span>
+      <div class="cap">${esc(v.title)}</div>
+      <div class="sub">${esc(v.channel || 'peertube')}</div>
+    </a>`).join('');
+  return d.results.map(r => `
+    <div class="res">
+      <div class="url">${esc(r.url)}</div>
+      <a href="${esc(r.url)}">${esc(r.title)}</a>
+      <p>${esc(r.snippet)}</p>
+    </div>`).join('');
+}
+function pagerHtml(d) {
+  return d.hasNext
+    ? '<div class="pager" id="pager"><button class="more" id="more">⟨⟨ charger plus ⟩⟩</button></div>'
+    : '<div class="pager" id="pager"><span class="fin">— fin des résultats —</span></div>';
+}
+function renderCard(d) {
+  if (d.instant) {
+    cardEl.innerHTML = `
+      <div class="card">
+        <h3>${esc(d.instant.title)}</h3>
+        ${d.instant.img ? `<img src="${esc(d.instant.img)}" alt="">` : ''}
+        <p>${esc(d.instant.extract)}</p>
+        ${d.instant.url ? '<div class="src">source : wikipédia</div>' : ''}
+      </div>`;
+  } else cardEl.innerHTML = '';
+}
+function bindMore() {
+  const btn = document.getElementById('more');
+  if (!btn) return;
+  btn.onclick = async () => {
+    btn.disabled = true; btn.textContent = '⇢ chargement…';
+    page++;
+    await load(false);
+  };
+}
+async function load(first) {
+  let d;
+  try { d = await window.aetherSearch.query(q, cat, page); }
+  catch (err) { fail('erreur interne du noyau : ' + (err && err.message ? err.message : err)); return; }
+  engineEl.textContent = '● moteur : ' + (d.engine || 'aucun');
+  const emptyAll = !(d.results && d.results.length) && !(d.images && d.images.length) && !(d.videos && d.videos.length);
+  if (!first) {
+    const pagerEl = document.getElementById('pager');
+    if (emptyAll) { pagerEl.outerHTML = '<div class="pager" id="pager"><span class="fin">— fin des résultats —</span></div>'; return; }
+    const tmp = document.createElement('div'); tmp.innerHTML = itemsHtml(d);
+    const nodes = [...tmp.children];
+    if (cat === 'images' || cat === 'videos') {
+      const grid = resultsEl.querySelector('.grid');
+      nodes.forEach(n => grid.appendChild(n));
+    } else {
+      nodes.forEach(n => resultsEl.insertBefore(n, pagerEl));
+    }
+    pagerEl.outerHTML = pagerHtml(d);
+    bindMore();
+    return;
+  }
+  if (d.error && emptyAll) {
+    fail('l\'aether n\'a pas répondu (' + (d.error || 'aucun résultat') + ')'
+      + (d.errors && d.errors.length ? ' — ' + d.errors.join(' · ') : '')
+      + ' — réessaie ou vérifie ta connexion');
+    return;
+  }
+  if (cat === 'images' || cat === 'videos') {
+    mainEl.classList.add('wide');
+    resultsEl.innerHTML = '<div class="grid">' + itemsHtml(d) + '</div>' + pagerHtml(d);
+  } else {
+    mainEl.classList.remove('wide');
+    resultsEl.innerHTML = itemsHtml(d) + pagerHtml(d);
+    renderCard(d);
+  }
+  bindMore();
+}
+load(true);
+</script>
+</body>
+</html>
